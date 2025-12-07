@@ -27,14 +27,42 @@ const GENERATED_DIR = path.join(ROOT_DIR, "generated");
 // Middleware
 app.use(express.json());
 
-// CORS middleware
+// CORS middleware with secure origin handling
+// Configure allowed origins via ALLOWED_ORIGINS environment variable (comma-separated)
+// Example: ALLOWED_ORIGINS=https://example.com,https://app.example.com
+// Defaults to localhost:3000 for development
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",")
+      .map(origin => origin.trim())
+      .filter(origin => {
+        // Validate that origins are proper URLs with http/https protocol
+        try {
+          const url = new URL(origin);
+          return url.protocol === "http:" || url.protocol === "https:";
+        } catch {
+          console.warn(`Invalid origin URL ignored: ${origin}`);
+          return false;
+        }
+      })
+  : ["http://localhost:3000"];
+
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
+  const origin = req.headers.origin;
+  
+  // Only set Access-Control-Allow-Origin if the origin is in the whitelist
+  if (origin && allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+    // Allow credentials (cookies, authorization headers) for whitelisted origins
+    // Remove this if your API doesn't need to support credentials
+    res.header("Access-Control-Allow-Credentials", "true");
+  }
+  
   res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, X-API-Key"
   );
+  
   if (req.method === "OPTIONS") {
     return res.sendStatus(200);
   }
