@@ -14,7 +14,7 @@ try {
     const capabilitiesSchema = JSON.parse(fs.readFileSync(capabilitiesSchemaPath, 'utf8'));
     ajv.addSchema(capabilitiesSchema, 'capabilities.capability.json');
   }
-} catch (err) {
+} catch {
   // safe to ignore at startup; validation will still report proper errors if schema is missing
 }
 

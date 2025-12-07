@@ -28,5 +28,13 @@
         "node_modules",
         "dist",
         "tests"
-    ]
+    ],
+    "ts-node": {
+        "compilerOptions": {
+            "module": "commonjs",
+            "moduleResolution": "node"
+        },
+        "transpileOnly": true,
+        "require": ["ts-node/register/transpile-only"]
+    }
 }
