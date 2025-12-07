@@ -87,13 +87,16 @@ export interface RateLimit {
 
 export interface Action {
   id: string;
+  name?: string;
   capability_id: string;
   repo: string;
   service: string;
   http: HttpConfig;
-  auth: "internal_api_key" | "oauth2" | "jwt" | "public";
+  auth: "internal_api_key" | "oauth2" | "jwt" | "public" | "oauth" | "twilio_signature";
   input_schema_ref?: string;
   output_schema_ref?: string;
+  request_schema?: string;
+  response_schema?: string;
   description?: string;
   examples?: ActionExample[];
   deprecated?: boolean;
