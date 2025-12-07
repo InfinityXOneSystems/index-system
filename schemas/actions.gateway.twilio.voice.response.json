@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TwilioVoiceWebhookResponse",
+  "type": "object",
+  "properties": {
+    "envelope": {
+      "type": "object",
+      "properties": {
+        "channel": { "type": "string", "enum": ["voice", "sms"] },
+        "from": { "type": "string" },
+        "to": { "type": "string" },
+        "callSid": { "type": "string" },
+        "body": { "type": "string" }
+      }
+    }
+  }
+}
