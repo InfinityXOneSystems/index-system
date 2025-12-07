@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ScheduleAppointmentResponse",
+  "type": "object",
+  "required": ["eventId", "status"],
+  "properties": {
+    "eventId": { "type": "string" },
+    "status": { "type": "string", "enum": ["created", "conflict", "failed"] },
+    "calendarId": { "type": "string" },
+    "audit": { "type": "object" }
+  }
+}

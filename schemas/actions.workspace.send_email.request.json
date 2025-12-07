@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SendEmailRequest",
+  "type": "object",
+  "required": ["from", "to", "subject", "body"],
+  "properties": {
+    "from": { "type": "string", "format": "email" },
+    "to": {
+      "type": "array",
+      "items": { "type": "string", "format": "email" }
+    },
+    "cc": {
+      "type": "array",
+      "items": { "type": "string", "format": "email" }
+    },
+    "bcc": {
+      "type": "array",
+      "items": { "type": "string", "format": "email" }
+    },
+    "subject": { "type": "string" },
+    "body": { "type": "string" },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "filename": { "type": "string" },
+          "content_base64": { "type": "string" }
+        }
+      }
+    },
+    "metadata": { "type": "object" }
+  }
+}

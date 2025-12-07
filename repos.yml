@@ -1,0 +1,219 @@
+# Canonical repositories metadata for InfinityXOneSystems
+# Schema: schemas/repos.repo.json
+repos:
+  - id: index
+    name: "index"
+    repo: "InfinityXOneSystems/index"
+    stage: 0
+    domain: "platform"
+    tier: 0
+    status: "active"
+    tags:
+      - "registry"
+      - "core"
+    owner: "platform-team"
+    languages:
+      - "typescript"
+    runtime: "node:20"
+    entrypoints:
+      - type: "http"
+        url: "/"
+        routes:
+          - "/healthz"
+          - "/readyz"
+          - "/repos"
+          - "/actions"
+          - "/capabilities"
+    datastores: []
+    dependencies:
+      internal:
+        - "InfinityXOneSystems/auto_templates"
+      external: []
+  - id: gateway
+    name: "gateway"
+    repo: "InfinityXOneSystems/gateway"
+    stage: 1
+    domain: "edge"
+    tier: 1
+    status: "active"
+    tags:
+      - "twilio"
+      - "openai"
+      - "webhook"
+    owner: "platform-team"
+    languages:
+      - "typescript"
+    runtime: "node:20"
+    entrypoints:
+      - type: "http"
+        routes:
+          - "/webhooks/twilio/voice"
+          - "/webhooks/twilio/sms"
+    datastores: []
+    dependencies:
+      internal:
+        - "InfinityXOneSystems/workspace"
+        - "InfinityXOneSystems/agents"
+  - id: workspace
+    name: "workspace"
+    repo: "InfinityXOneSystems/workspace"
+    stage: 1
+    domain: "integrations"
+    tier: 1
+    status: "active"
+    tags:
+      - "google"
+      - "gmail"
+      - "calendar"
+    owner: "workspace-team"
+    languages:
+      - "typescript"
+    runtime: "node:20"
+    entrypoints:
+      - type: "http"
+        routes:
+          - "/aura/workspace/send-email"
+          - "/aura/workspace/schedule-appointment"
+    datastores:
+      - type: "sheets"
+        name: "appointments_log"
+    dependencies:
+      internal:
+        - "InfinityXOneSystems/agents"
+  - id: agents
+    name: "agents"
+    repo: "InfinityXOneSystems/agents"
+    stage: 1
+    domain: "ai"
+    tier: 1
+    status: "active"
+    tags:
+      - "aura"
+      - "agent-framework"
+    owner: "agents-team"
+    languages:
+      - "typescript"
+    runtime: "node:20"
+    entrypoints:
+      - type: "library"
+    datastores: []
+    dependencies:
+      internal:
+        - "InfinityXOneSystems/index"
+        - "InfinityXOneSystems/workspace"
+  - id: automation
+    name: "automation"
+    repo: "InfinityXOneSystems/automation"
+    stage: 1
+    domain: "jobs"
+    tier: 1
+    status: "active"
+    tags:
+      - "jobs"
+      - "scheduler"
+    owner: "automation-team"
+    languages:
+      - "typescript"
+    runtime: "node:20"
+    entrypoints:
+      - type: "cron"
+    datastores: []
+    dependencies:
+      internal:
+        - "InfinityXOneSystems/workspace"
+  - id: frontend
+    name: "frontend"
+    repo: "InfinityXOneSystems/frontend"
+    stage: 1
+    domain: "ui"
+    tier: 1
+    status: "active"
+    tags:
+      - "react"
+    owner: "frontend-team"
+    languages:
+      - "typescript"
+    runtime: "node:20"
+    entrypoints:
+      - type: "http"
+        routes:
+          - "/"
+    datastores: []
+    dependencies:
+      internal:
+        - "InfinityXOneSystems/gateway"
+  - id: doc_evolution_system
+    name: "doc_evolution_system"
+    repo: "InfinityXOneSystems/doc_evolution_system"
+    stage: 0
+    domain: "evolution"
+    tier: 1
+    status: "planned"
+    tags:
+      - "docs"
+      - "summarization"
+    owner: "knowledge-team"
+    languages:
+      - "typescript"
+    runtime: "node:20"
+    entrypoints:
+      - type: "http"
+    datastores: []
+    dependencies:
+      internal: []
+      external: []
+  - id: taxonomy
+    name: "taxonomy"
+    repo: "InfinityXOneSystems/taxonomy"
+    stage: 0
+    domain: "ontology"
+    tier: 1
+    status: "planned"
+    tags:
+      - "ontology"
+    owner: "knowledge-team"
+    languages:
+      - "yaml"
+    runtime: "n/a"
+    entrypoints: []
+    datastores: []
+    dependencies:
+      internal: []
+      external: []
+  - id: security
+    name: "security"
+    repo: "InfinityXOneSystems/security"
+    stage: 0
+    domain: "security"
+    tier: 0
+    status: "active"
+    tags:
+      - "policies"
+    owner: "security-team"
+    languages:
+      - "markdown"
+    runtime: "n/a"
+    entrypoints: []
+    datastores: []
+    dependencies:
+      internal: []
+      external: []
+  - id: auto_templates
+    name: "auto_templates"
+    repo: "InfinityXOneSystems/auto_templates"
+    stage: 0
+    domain: "foundation"
+    tier: 0
+    status: "active"
+    tags:
+      - "ci"
+      - "templates"
+    owner: "platform-team"
+    languages:
+      - "yaml"
+    runtime: "n/a"
+    entrypoints: []
+    datastores: []
+    dependencies:
+      internal: []
+      external: []
