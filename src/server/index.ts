@@ -30,12 +30,23 @@ app.use(express.json());
 // CORS middleware with configurable origin whitelist
 // Set ALLOWED_ORIGINS env var to comma-separated list of origins
 // Example: ALLOWED_ORIGINS=http://localhost:3000,https://app.example.com
-// If not set, defaults to localhost for development
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()) || [
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://localhost:8080',
-];
+// In production, ALLOWED_ORIGINS should always be explicitly configured
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : process.env.NODE_ENV === 'production'
+  ? [] // No default origins in production - must be explicitly configured
+  : [
+      // Development-friendly defaults
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:8080',
+    ];
+
+// Warn if production environment has no CORS origins configured
+if (process.env.NODE_ENV === 'production' && allowedOrigins.length === 0) {
+  console.warn('⚠️  WARNING: No CORS origins configured in production. Set ALLOWED_ORIGINS environment variable.');
+  console.warn('   All cross-origin requests will be blocked.');
+}
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
@@ -45,6 +56,8 @@ app.use((req, res, next) => {
     res.header("Access-Control-Allow-Credentials", "true");
   } else if (process.env.NODE_ENV === 'development' && !origin) {
     // Allow requests without origin header in development (e.g., curl, Postman)
+    // This is logged for security awareness
+    console.log('[CORS] Allowing wildcard origin for request without origin header (development mode)');
     res.header("Access-Control-Allow-Origin", "*");
   }
   
