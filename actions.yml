@@ -1,0 +1,62 @@
+# Capabilities and actions registry for Aura and platform agents
+# Schema: schemas/actions.action.json
+capabilities:
+  - id: cap.workspace.email.send
+    name: "Workspace: Send Email"
+    description: "Send an email via the Workspace/Gmail integration"
+    tags:
+      - email
+      - workspace
+    auth: "oauth"
+  - id: cap.workspace.calendar.schedule
+    name: "Workspace: Schedule Calendar Event"
+    description: "Create calendar events and manage RSVPs"
+    tags:
+      - calendar
+      - workspace
+    auth: "oauth"
+  - id: cap.gateway.twilio.inbound.voice
+    name: "Gateway: Twilio Inbound Voice"
+    description: "Inbound Twilio voice event handling"
+    tags:
+      - twilio
+      - voice
+    auth: "twilio_signature"
+
+actions:
+  - id: act.workspace.send_email
+    name: "Send Email"
+    capability_id: cap.workspace.email.send
+    repo: InfinityXOneSystems/workspace
+    service: workspace
+    http:
+      method: POST
+      path: /aura/workspace/send-email
+    auth: oauth
+    request_schema: schemas/actions.workspace.send_email.request.json
+    response_schema: schemas/actions.workspace.send_email.response.json
+    description: "Send an email on behalf of Aura or user, queued & audited"
+  - id: act.aura.schedule_appointment
+    name: "Schedule Appointment"
+    capability_id: cap.workspace.calendar.schedule
+    repo: InfinityXOneSystems/workspace
+    service: workspace
+    http:
+      method: POST
+      path: /aura/workspace/schedule-appointment
+    auth: oauth
+    request_schema: schemas/actions.workspace.schedule_appointment.request.json
+    response_schema: schemas/actions.workspace.schedule_appointment.response.json
+    description: "Schedule an appointment using Google Calendar and log to Sheets"
+  - id: act.gateway.handle_twilio_voice
+    name: "Handle Twilio Voice"
+    capability_id: cap.gateway.twilio.inbound.voice
+    repo: InfinityXOneSystems/gateway
+    service: gateway
+    http:
+      method: POST
+      path: /webhooks/twilio/voice
+    auth: twilio_signature
+    request_schema: schemas/actions.gateway.twilio.voice.request.json
+    response_schema: schemas/actions.gateway.twilio.voice.response.json
+    description: "Normalize incoming Twilio voice webhook events into internal envelopes"

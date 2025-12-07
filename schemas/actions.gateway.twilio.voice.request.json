@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TwilioVoiceWebhookRequest",
+  "type": "object",
+  "properties": {
+    "CallSid": { "type": "string" },
+    "From": { "type": "string" },
+    "To": { "type": "string" },
+    "CallStatus": { "type": "string" },
+    "Direction": { "type": "string" },
+    "RecordingUrl": { "type": "string" },
+    "Digits": { "type": "string" },
+    "Body": { "type": "string" }
+  }
+}

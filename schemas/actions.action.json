@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Actions",
+  "type": "object",
+  "properties": {
+    "capabilities": {
+      "type": "array",
+      "items": { "$ref": "capabilities.capability.json" }
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "capability_id", "repo", "service", "http"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "capability_id": { "type": "string" },
+          "repo": { "type": "string" },
+          "service": { "type": "string" },
+          "http": {
+            "type": "object",
+            "required": ["method", "path"],
+            "properties": {
+              "method": { "type": "string" },
+              "path": { "type": "string" }
+            }
+          },
+          "auth": { "type": "string" },
+          "request_schema": { "type": "string" },
+          "response_schema": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    }
+  },
+  "required": ["capabilities", "actions"]
+}

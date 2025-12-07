@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ScheduleAppointmentRequest",
+  "type": "object",
+  "required": ["organizer", "participants", "start", "end", "timezone", "subject"],
+  "properties": {
+    "organizer": { "type": "string", "format": "email" },
+    "participants": {
+      "type": "array",
+      "items": { "type": "string", "format": "email" }
+    },
+    "start": { "type": "string", "format": "date-time" },
+    "end": { "type": "string", "format": "date-time" },
+    "timezone": { "type": "string" },
+    "subject": { "type": "string" },
+    "description": { "type": "string" },
+    "location": { "type": "string" },
+    "metadata": { "type": "object" }
+  }
+}

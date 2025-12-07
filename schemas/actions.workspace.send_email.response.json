@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SendEmailResponse",
+  "type": "object",
+  "required": ["message_id", "status"],
+  "properties": {
+    "message_id": { "type": "string" },
+    "status": { "type": "string", "enum": ["queued", "sent", "failed"] },
+    "audit": { "type": "object" }
+  }
+}
