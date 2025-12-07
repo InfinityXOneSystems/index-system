@@ -27,7 +27,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        run: npm install
 
       - name: Lint code
         run: npm run lint
@@ -77,7 +76,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        run: npm install
 
       - name: Validate repos.yml
         run: npm run validate -- repos
