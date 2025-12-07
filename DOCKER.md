@@ -128,10 +128,12 @@ Configure via `docker-compose.yml` or `-e` flags:
 ## Volumes
 
 Production container mounts:
+
 - `./config:/app/config:ro` - Configuration files (read-only)
 - `./schemas:/app/schemas:ro` - JSON schemas (read-only)
 
 Development adds:
+
 - `./src:/app/src:ro` - Source code for hot reload
 
 ## Networking
@@ -176,6 +178,7 @@ docker-compose -f docker-compose.dev.yml up --build
 For production deployment (e.g., AWS ECS, Kubernetes):
 
 1. **Push to Registry**:
+
    ```bash
    docker tag infinity-index:latest your-registry/infinity-index:latest
    docker push your-registry/infinity-index:latest
