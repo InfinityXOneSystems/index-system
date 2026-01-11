@@ -28,29 +28,29 @@ const GENERATED_DIR = path.join(ROOT_DIR, "generated");
 app.use(express.json());
 
 // CORS middleware
-app.use((req, res, next) => {
+app.use((_req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, X-API-Key"
   );
-  if (req.method === "OPTIONS") {
+  if (_req.method === "OPTIONS") {
     return res.sendStatus(200);
   }
-  next();
+  return next();
 });
 
 // Request logging middleware
-app.use((req, res, next) => {
+app.use((req, _res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
   next();
 });
 
 // Error handling middleware
-app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   console.error("Error:", err);
-  res.status(500).json({
+  return res.status(500).json({
     error: "Internal server error",
     message: err.message,
   });
@@ -60,28 +60,28 @@ app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
 // HEALTH CHECK ENDPOINTS
 // ============================================================================
 
-app.get("/health", (req, res) => {
-  res.json({
+app.get("/health", (_req, res) => {
+  return res.json({
     status: "healthy",
     service: "infinity-xos-global-index",
     timestamp: new Date().toISOString(),
   });
 });
 
-app.get("/healthz", (req, res) => {
-  res.json({
+app.get("/healthz", (_req, res) => {
+  return res.json({
     status: "healthy",
     service: "infinity-xos-global-index",
     timestamp: new Date().toISOString(),
   });
 });
-app.get("/readyz", (req, res) => {
+app.get("/readyz", (_req, res) => {
   try {
     // Check if config files exist and can be loaded
     loadRepos();
     loadActions();
 
-    res.json({
+    return res.json({
       status: "ready",
       service: "infinity-xos-global-index",
       timestamp: new Date().toISOString(),
@@ -91,7 +91,7 @@ app.get("/readyz", (req, res) => {
       },
     });
   } catch (error) {
-    res.status(503).json({
+    return res.status(503).json({
       status: "not ready",
       service: "infinity-xos-global-index",
       timestamp: new Date().toISOString(),
@@ -115,13 +115,13 @@ app.get("/repos", (req, res) => {
 
     const repos = filterRepos(filters);
 
-    res.json({
+    return res.json({
       total: repos.length,
       filters,
       repositories: repos,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       error: "Failed to load repositories",
       message: error instanceof Error ? error.message : String(error),
     });
@@ -139,9 +139,9 @@ app.get("/repos/:name", (req, res) => {
       });
     }
 
-    res.json(repo);
+    return res.json(repo);
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       error: "Failed to get repository",
       message: error instanceof Error ? error.message : String(error),
     });
@@ -160,13 +160,13 @@ app.get("/capabilities", (req, res) => {
 
     const capabilities = filterCapabilities(filters);
 
-    res.json({
+    return res.json({
       total: capabilities.length,
       filters,
       capabilities,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       error: "Failed to load capabilities",
       message: error instanceof Error ? error.message : String(error),
     });
@@ -184,9 +184,9 @@ app.get("/capabilities/:id", (req, res) => {
       });
     }
 
-    res.json(capability);
+    return res.json(capability);
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       error: "Failed to get capability",
       message: error instanceof Error ? error.message : String(error),
     });
@@ -207,13 +207,13 @@ app.get("/actions", (req, res) => {
 
     const actions = filterActions(filters);
 
-    res.json({
+    return res.json({
       total: actions.length,
       filters,
       actions,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       error: "Failed to load actions",
       message: error instanceof Error ? error.message : String(error),
     });
@@ -231,9 +231,9 @@ app.get("/actions/:id", (req, res) => {
       });
     }
 
-    res.json(action);
+    return res.json(action);
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       error: "Failed to get action",
       message: error instanceof Error ? error.message : String(error),
     });
@@ -244,7 +244,7 @@ app.get("/actions/:id", (req, res) => {
 // OPENAPI ENDPOINT
 // ============================================================================
 
-app.get("/actions/openapi", (req, res) => {
+app.get("/actions/openapi", (_req, res) => {
   try {
     // Check if pre-generated spec exists
     const specPath = path.join(GENERATED_DIR, "openapi-actions.json");
@@ -257,9 +257,9 @@ app.get("/actions/openapi", (req, res) => {
     // Generate on-the-fly if not found
     console.log("Generating OpenAPI spec on-the-fly...");
     const spec = generateOpenAPI();
-    res.json(spec);
+    return res.json(spec);
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       error: "Failed to generate OpenAPI spec",
       message: error instanceof Error ? error.message : String(error),
       hint: "Run `npm run generate:openapi` to pre-generate the spec",
@@ -292,9 +292,9 @@ app.get("/graph/services", (req, res) => {
     }
 
     // Default to JSON
-    res.json(graph);
+    return res.json(graph);
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       error: "Failed to generate service graph",
       message: error instanceof Error ? error.message : String(error),
     });
@@ -305,13 +305,13 @@ app.get("/graph/services", (req, res) => {
 // VALIDATION ENDPOINT
 // ============================================================================
 
-app.get("/validate", (req, res) => {
+app.get("/validate", (_req, res) => {
   try {
     const reposData = loadRepos();
     const actionsData = loadActions();
     const result = validateAll(reposData, actionsData);
 
-    res.json({
+    return res.json({
       valid: result.valid,
       summary: {
         repos: {
@@ -337,7 +337,7 @@ app.get("/validate", (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       error: "Failed to validate configurations",
       message: error instanceof Error ? error.message : String(error),
     });
@@ -348,79 +348,50 @@ app.get("/validate", (req, res) => {
 // ROOT ENDPOINT
 // ============================================================================
 
-app.get("/", (req, res) => {
-  res.json({
-    service: "Infinity XOS Global Index",
+app.get("/", (_req, res) => {
+  return res.json({
+    service: "infinity-xos-global-index",
+    status: "running",
     version: "1.0.0",
-    description: "Tier-0 Global Index and Capabilities Registry",
-    endpoints: {
-      health: {
-        "/healthz": "Health check",
-        "/readyz": "Readiness check",
-      },
-      repositories: {
-        "GET /repos": "List all repositories (supports filtering)",
-        "GET /repos/:name": "Get specific repository",
-      },
-      capabilities: {
-        "GET /capabilities": "List all capabilities (supports filtering)",
-        "GET /capabilities/:id": "Get specific capability",
-      },
-      actions: {
-        "GET /actions": "List all actions (supports filtering)",
-        "GET /actions/:id": "Get specific action",
-        "GET /actions/openapi": "Get OpenAPI 3.1 specification",
-      },
-      graph: {
-        "GET /graph/services":
-          "Get service dependency graph (supports format=json|mermaid|dot)",
-      },
-      validation: {
-        "GET /validate": "Validate all configurations",
-      },
-    },
-    documentation: "https://github.com/InfinityXOneSystems/index",
+    environment: process.env.NODE_ENV || "development",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    endpoints: [
+      "/health",
+      "/healthz",
+      "/readyz",
+      "/repos",
+      "/repos/:name",
+      "/capabilities",
+      "/capabilities/:id",
+      "/actions",
+      "/actions/:id",
+      "/actions/openapi",
+      "/graph/services",
+      "/validate",
+    ],
   });
 });
 
 // ============================================================================
-// START SERVER
+// SERVER START
 // ============================================================================
 
 app.listen(PORT, () => {
-  console.log(`\nðŸš€ Infinity XOS Global Index (Tier-0) started`);
-  console.log(`ðŸ“ Listening on http://localhost:${PORT}`);
-  console.log(`ðŸ“– API docs at http://localhost:${PORT}/\n`);
+  console.log(`Server is running on port ${PORT}`);
+  console.log(`Access health check at http://localhost:${PORT}/health`);
 
-  // Validate on startup
+  // Initial validation on startup
   try {
     const reposData = loadRepos();
     const actionsData = loadActions();
     const result = validateAll(reposData, actionsData);
 
     if (result.valid) {
-      console.log("âœ… All configurations validated successfully");
-      console.log(`   - ${result.repos.totalRepos} repositories`);
-      console.log(`   - ${result.actions.capabilities.total} capabilities`);
-      console.log(`   - ${result.actions.actions.total} actions\n`);
+      console.log("âœ” All configurations are valid on startup.");
     } else {
-      console.warn("âš ï¸  Configuration validation warnings:");
-      if (result.repos.invalidRepos.length > 0) {
-        console.warn(
-          `   - ${result.repos.invalidRepos.length} invalid repositories`
-        );
-      }
-      if (result.actions.capabilities.invalid.length > 0) {
-        console.warn(
-          `   - ${result.actions.capabilities.invalid.length} invalid capabilities`
-        );
-      }
-      if (result.actions.actions.invalid.length > 0) {
-        console.warn(
-          `   - ${result.actions.actions.invalid.length} invalid actions`
-        );
-      }
-      console.warn("");
+      console.warn("âš  Some configurations are invalid on startup.");
+      console.warn("Details:", JSON.stringify({ invalidRepos: result.repos.invalidRepos, invalidCapabilities: result.actions.capabilities.invalid, invalidActions: result.actions.actions.invalid }, null, 2));
     }
   } catch (error) {
     console.error("âŒ Failed to validate configurations on startup:", error);
@@ -428,86 +399,3 @@ app.listen(PORT, () => {
 });
 
 export default app;
-import express from 'express';
-import { loadYamlFile, validateSchema, loadJsonFile } from '../lib/loader';
-import path from 'path';
-import { RepoList, ActionsFile } from '../types/index';
-
-const app = express();
-app.use(express.json());
-
-function startupValidate() {
-  // Validate repos.yml
-  const repos = loadYamlFile<RepoList>('repos.yml');
-  const repoVal = validateSchema(repos, 'schemas/repos.repo.json');
-  if (!repoVal.valid) {
-    console.error('repos.yml validation errors:', repoVal.errors);
-    throw new Error('repos.yml invalid');
-  }
-
-  // Validate actions.yml
-  const actions = loadYamlFile<ActionsFile>('actions.yml');
-  const actionsVal = validateSchema(actions, 'schemas/actions.action.json');
-  if (!actionsVal.valid) {
-    console.error('actions.yml validation errors:', actionsVal.errors);
-    throw new Error('actions.yml invalid');
-  }
-
-  console.log('Startup validation successful');
-  return { repos, actions };
-}
-
-const { repos, actions } = startupValidate();
-
-app.get('/healthz', (_req, res) => res.json({ status: 'ok' }));
-app.get('/readyz', (_req, res) => res.json({ status: 'ready' }));
-
-app.get('/repos', (_req, res) => {
-  res.json(repos);
-});
-
-app.get('/repos/:id', (req, res) => {
-  const r = repos.repos.find((x) => x.id === req.params.id);
-  if (!r) {
-    return res.status(404).json({ error: 'not found' });
-  }
-  return res.json(r);
-});
-
-app.get('/actions', (_req, res) => res.json(actions.actions));
-app.get('/actions/:id', (req, res) => {
-  const a = actions.actions.find((x) => x.id === req.params.id);
-  if (!a) {
-    return res.status(404).json({ error: 'not found' });
-  }
-  return res.json(a);
-});
-
-app.get('/capabilities', (_req, res) => res.json(actions.capabilities));
-app.get('/capabilities/:id', (req, res) => {
-  const c = actions.capabilities.find((x) => x.id === req.params.id);
-  if (!c) {
-    return res.status(404).json({ error: 'not found' });
-  }
-  return res.json(c);
-});
-
-app.get('/actions/openapi', (_req, res) => {
-  // Serve generated openapi if exists
-  const p = path.resolve(process.cwd(), 'generated/openapi-actions.json');
-  try {
-    const openapi = loadJsonFile(p);
-    return res.json(openapi);
-  } catch (err) {
-    return res.status(404).json({ error: 'OpenAPI not generated. Run index-cli generate-openapi' });
-  }
-});
-
-// Health-check friendly port
-const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
-if (port < 1 || port > 65535) {
-  throw new Error('PORT must be between 1 and 65535');
-}
-app.listen(port, () => {
-  console.log(`Index service listening on ${port}`);
-});

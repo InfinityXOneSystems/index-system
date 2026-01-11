@@ -1,35 +1,4 @@
 {
-    "compilerOptions": {
-        "target": "ES2022",
-        "module": "commonjs",
-        "lib": [
-            "ES2022"
-        ],
-        "outDir": "./dist",
-        "rootDir": "./src",
-        "strict": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
-        "resolveJsonModule": true,
-        "declaration": true,
-        "declarationMap": true,
-        "sourceMap": true,
-        "moduleResolution": "node",
-        "types": [
-            "node",
-            "jest"
-        ]
-    },
-    "include": [
-        "src/**/*"
-    ],
-    "exclude": [
-        "node_modules",
-        "dist",
-        "tests"
-    ]
-}
   "compilerOptions": {
     "target": "ES2022",
     "module": "CommonJS",
@@ -47,5 +16,10 @@
     "resolveJsonModule": true,
     "types": ["node", "jest"]
   },
-  "include": ["src/**/*", "schemas/**/*", "actions.yml", "repos.yml"]
+  "include": ["src/**/*", "schemas/**/*", "actions.yml", "repos.yml"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests"
+  ]
 }

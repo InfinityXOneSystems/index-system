@@ -19,6 +19,7 @@ import {
 } from "../utils/validator.js";
 import { generateAndWriteOpenAPI } from "../generators/openapi.js";
 import { generateAndWriteGraphs } from "../generators/graph.js";
+import { Repo, Capability, Action } from "../types/index";
 
 const program = new Command();
 
@@ -68,7 +69,7 @@ reposCmd
       console.log(
         "â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤"
       );
-      repos.forEach((repo) => {
+      repos.forEach((repo: Repo) => {
         console.log(
           `â”‚ ${repo.name.padEnd(25)} â”‚ S${repo.stage} â”‚ ${repo.tier.padEnd(
             7
@@ -90,7 +91,7 @@ reposCmd
     const repo = getRepo(name);
 
     if (!repo) {
-      console.error(`Repository '${name}' not found`);
+      console.error(`Repository \'${name}\' not found`);
       process.exit(1);
     }
 
@@ -137,7 +138,7 @@ capabilitiesCmd
       console.log(
         "â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤"
       );
-      capabilities.forEach((cap) => {
+      capabilities.forEach((cap: Capability) => {
         console.log(
           `â”‚ ${cap.id.padEnd(35)} â”‚ ${cap.domain.padEnd(12)} â”‚ ${cap.name
             .substring(0, 22)
@@ -159,7 +160,7 @@ capabilitiesCmd
     const capability = getCapability(id);
 
     if (!capability) {
-      console.error(`Capability '${id}' not found`);
+      console.error(`Capability \'${id}\' not found`);
       process.exit(1);
     }
 
@@ -205,7 +206,7 @@ actionsCmd
       console.log(
         "â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤"
       );
-      actions.forEach((action) => {
+      actions.forEach((action: Action) => {
         const method = action.http.method.padEnd(6);
         const path = action.http.path.substring(0, 30).padEnd(30);
         console.log(
@@ -229,7 +230,7 @@ actionsCmd
     const action = getAction(id);
 
     if (!action) {
-      console.error(`Action '${id}' not found`);
+      console.error(`Action \'${id}\' not found`);
       process.exit(1);
     }
 
@@ -262,7 +263,7 @@ validateCmd
 
     if (result.invalidRepos.length > 0) {
       console.log("\nErrors:");
-      result.invalidRepos.forEach(({ name, errors }) => {
+      result.invalidRepos.forEach(({ name, errors }: {name: string, errors: string[]}) => {
         console.log(`\n  ${name}:`);
         errors.forEach((err) => console.log(`    - ${err}`));
       });
@@ -280,16 +281,16 @@ validateCmd
     const result = validateAllActions(actionsData);
 
     console.log("\n=== ACTIONS VALIDATION ===");
-    console.log(
-      `\nCapabilities: ${result.capabilities.valid}/${result.capabilities.total} valid`
-    );
-    console.log(
-      `Actions: ${result.actions.valid}/${result.actions.total} valid`
-    );
+    console.log(`Total capabilities: ${result.capabilities.total}`);
+    console.log(`Valid capabilities: ${result.capabilities.valid}`);
+    console.log(`Invalid capabilities: ${result.capabilities.invalid.length}`);
+    console.log(`Total actions: ${result.actions.total}`);
+    console.log(`Valid actions: ${result.actions.valid}`);
+    console.log(`Invalid actions: ${result.actions.invalid.length}`);
 
     if (result.capabilities.invalid.length > 0) {
       console.log("\nInvalid capabilities:");
-      result.capabilities.invalid.forEach(({ id, errors }) => {
+      result.capabilities.invalid.forEach(({ id, errors }: {id: string, errors: string[]}) => {
         console.log(`\n  ${id}:`);
         errors.forEach((err) => console.log(`    - ${err}`));
       });
@@ -297,7 +298,7 @@ validateCmd
 
     if (result.actions.invalid.length > 0) {
       console.log("\nInvalid actions:");
-      result.actions.invalid.forEach(({ id, errors }) => {
+      result.actions.invalid.forEach(({ id, errors }: {id: string, errors: string[]}) => {
         console.log(`\n  ${id}:`);
         errors.forEach((err) => console.log(`    - ${err}`));
       });
@@ -307,30 +308,53 @@ validateCmd
       process.exit(1);
     }
 
-    console.log("\nâœ… All capabilities and actions are valid\n");
+    console.log("\nâœ… All actions and capabilities are valid\n");
   });
 
 validateCmd
   .command("all")
-  .description("Validate both repos.yml and actions.yml")
+  .description("Validate all configurations (repos.yml and actions.yml)")
   .action(() => {
     const reposData = loadRepos();
     const actionsData = loadActions();
     const result = validateAll(reposData, actionsData);
 
-    console.log("\n=== FULL VALIDATION ===");
-    console.log(
-      `\nRepositories: ${result.repos.validRepos}/${result.repos.totalRepos} valid`
-    );
-    console.log(
-      `Capabilities: ${result.actions.capabilities.valid}/${result.actions.capabilities.total} valid`
-    );
-    console.log(
-      `Actions: ${result.actions.actions.valid}/${result.actions.actions.total} valid`
-    );
+    console.log("\n=== FULL CONFIGURATION VALIDATION ===");
+    console.log(`Total repositories: ${result.repos.totalRepos}`);
+    console.log(`Valid repositories: ${result.repos.validRepos}`);
+    console.log(`Invalid repositories: ${result.repos.invalidRepos.length}`);
+    console.log(`Total capabilities: ${result.actions.capabilities.total}`);
+    console.log(`Valid capabilities: ${result.actions.capabilities.valid}`);
+    console.log(`Invalid capabilities: ${result.actions.capabilities.invalid.length}`);
+    console.log(`Total actions: ${result.actions.actions.total}`);
+    console.log(`Valid actions: ${result.actions.actions.valid}`);
+    console.log(`Invalid actions: ${result.actions.actions.invalid.length}`);
+
+    if (result.repos.invalidRepos.length > 0) {
+      console.log("\nInvalid repositories:");
+      result.repos.invalidRepos.forEach(({ name, errors }: {name: string, errors: string[]}) => {
+        console.log(`\n  ${name}:`);
+        errors.forEach((err) => console.log(`    - ${err}`));
+      });
+    }
+
+    if (result.actions.capabilities.invalid.length > 0) {
+      console.log("\nInvalid capabilities:");
+      result.actions.capabilities.invalid.forEach(({ id, errors }: {id: string, errors: string[]}) => {
+        console.log(`\n  ${id}:`);
+        errors.forEach((err) => console.log(`    - ${err}`));
+      });
+    }
+
+    if (result.actions.actions.invalid.length > 0) {
+      console.log("\nInvalid actions:");
+      result.actions.actions.invalid.forEach(({ id, errors }: {id: string, errors: string[]}) => {
+        console.log(`\n  ${id}:`);
+        errors.forEach((err) => console.log(`    - ${err}`));
+      });
+    }
 
     if (!result.valid) {
-      console.log("\nâŒ Validation failed - see errors above\n");
       process.exit(1);
     }
 
@@ -343,147 +367,78 @@ validateCmd
 
 const generateCmd = program
   .command("generate")
-  .description("Generate specifications and docs")
-  .alias("gen");
+  .description("Generate various outputs");
 
 generateCmd
   .command("openapi")
-  .description("Generate OpenAPI 3.1 specification from actions.yml")
-  .option("-o, --output <filename>", "Output filename", "openapi-actions.json")
+  .description("Generate OpenAPI specification from actions.yml")
+  .option("-o, --output <path>", "Output file path", "./generated/openapi-actions.json")
   .action((options) => {
-    console.log("\nGenerating OpenAPI 3.1 specification...");
-
-    const { spec, path: outputPath } = generateAndWriteOpenAPI(options.output);
-
-    console.log(`\nâœ… Generated OpenAPI spec:`);
-    console.log(`   Path: ${outputPath}`);
-    console.log(`   Paths: ${Object.keys(spec.paths).length}`);
-    console.log(
-      `   Schemas: ${Object.keys(spec.components?.schemas || {}).length}`
-    );
-    console.log(`   Tags: ${spec.tags?.length || 0}\n`);
+    generateAndWriteOpenAPI(options.output);
+    console.log(`OpenAPI specification generated at ${options.output}`);
   });
 
 generateCmd
   .command("graph")
-  .description("Generate service dependency graph")
-  .option("-s, --stage <number>", "Filter by stage")
-  .option("-d, --domain <string>", "Filter by domain")
-  .option("-t, --tier <string>", "Filter by tier")
+  .description("Generate service graph from repos.yml and actions.yml")
+  .option("-o, --output <path>", "Output directory", "./generated")
+  .option("-f, --format <format>", "Output format (mermaid|dot|json)", "json")
   .action((options) => {
-    console.log("\nGenerating service dependency graph...");
+    generateAndWriteGraphs({ stage: options.stage ? parseInt(options.stage) : undefined, domain: options.domain, tier: options.tier });
+    console.log(`Service graphs generated in ${options.output} directory.`);
+  });
 
-    const filters: any = {};
-    if (options.stage) filters.stage = parseInt(options.stage);
-    if (options.domain) filters.domain = options.domain;
-    if (options.tier) filters.tier = options.tier;
+// ============================================================================
+// UTILITY COMMANDS (for testing/debugging)
+// ============================================================================
 
-    const paths = generateAndWriteGraphs(filters);
+program
+  .command("repos:list-raw")
+  .description("List repos from repos.yml (raw)")
+  .action(() => {
+    const repos = loadRepos();
+    console.table(repos.repos.map((r: Repo) => ({ id: r.id, repo: r.repo, owner: r.owner, stage: r.stage, status: r.status })));
+  });
 
-    console.log(`\nâœ… Generated graphs:`);
-    console.log(`   JSON: ${paths.json}`);
-    console.log(`   Mermaid: ${paths.mermaid}`);
-    console.log(`   DOT: ${paths.dot}\n`);
+program
+  .command("repos:show-raw <id>")
+  .description("Show repo by id (raw)")
+  .action((id: string) => {
+    const repo = getRepo(id);
+    if (!repo) {
+      console.error("Repo not found:", id);
+      process.exit(2);
+    }
+    console.log(YAML.stringify(repo));
+  });
+
+program
+  .command("actions:list-raw")
+  .description("List actions (raw)")
+  .action(() => {
+    const actions = loadActions();
+    console.table(actions.actions.map((a: Action) => ({ id: a.id, path: a.http.path, method: a.http.method })));
+  });
+
+program
+  .command("actions:show-raw <id>")
+  .description("Show action by id (raw)")
+  .action((id: string) => {
+    const action = getAction(id);
+    if (!action) {
+      console.error("Action not found:", id);
+      process.exit(2);
+    }
+    console.log(YAML.stringify(action));
+  });
+
+program
+  .command("capabilities:list-raw")
+  .description("List capabilities (raw)")
+  .action(() => {
+    const actions = loadActions();
+    console.table(actions.capabilities.map((c: Capability) => ({ id: c.id, name: c.name })));
   });
 
 // Parse CLI arguments
 program.parse();
-import { program } from 'commander';
-import { loadYamlFile } from '../lib/loader';
-import fs from 'fs';
-import path from 'path';
-import { ActionsFile, RepoList } from '../types/index';
-
-program.name('index-cli').description('Global Index CLI').version('0.1.0');
-
-program
-  .command('repos:list')
-  .description('List repos from repos.yml')
-  .action(() => {
-    const repos = loadYamlFile<RepoList>('repos.yml');
-    console.table(repos.repos.map((r) => ({ id: r.id, repo: r.repo, owner: r.owner, stage: r.stage, status: r.status })));
-  });
-
-program
-  .command('repos:show <id>')
-  .description('Show repo by id')
-  .action((id: string) => {
-    const repos = loadYamlFile<RepoList>('repos.yml');
-    const r = repos.repos.find((x) => x.id === id);
-    if (!r) {
-      console.error('Repo not found:', id);
-      process.exit(2);
-    }
-    console.log(JSON.stringify(r, null, 2));
-  });
-
-program
-  .command('actions:list')
-  .description('List actions')
-  .action(() => {
-    const actions = loadYamlFile<ActionsFile>('actions.yml');
-    console.table(actions.actions.map((a) => ({ id: a.id, name: a.name, path: a.http.path, method: a.http.method })));
-  });
-
-program
-  .command('actions:show <id>')
-  .description('Show action by id')
-  .action((id: string) => {
-    const actions = loadYamlFile<ActionsFile>('actions.yml');
-    const a = actions.actions.find((x) => x.id === id);
-    if (!a) {
-      console.error('Action not found:', id);
-      process.exit(2);
-    }
-    console.log(JSON.stringify(a, null, 2));
-  });
-
-program
-  .command('capabilities:list')
-  .description('List capabilities')
-  .action(() => {
-    const actions = loadYamlFile<ActionsFile>('actions.yml');
-    console.table(actions.capabilities.map((c) => ({ id: c.id, name: c.name })));
-  });
-
-program
-  .command('generate-openapi')
-  .description('Generate OpenAPI 3.1 JSON for actions')
-  .option('-o, --out <path>', 'output path', 'generated/openapi-actions.json')
-  .action((opts) => {
-    const actions = loadYamlFile<ActionsFile>('actions.yml');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const openapi: any = {
-      openapi: '3.1.0',
-      info: { title: 'Infinity X Actions', version: '0.1.0' },
-      paths: {}
-    };
-
-    actions.actions.forEach((a) => {
-      openapi.paths[a.http.path] = openapi.paths[a.http.path] || {};
-      openapi.paths[a.http.path][a.http.method.toLowerCase()] = {
-        summary: a.name,
-        description: a.description,
-        responses: {
-          '200': { description: 'Success' }
-        }
-      };
-      // If schema references exist, include basic ref stub
-      if (a.request_schema) {
-        openapi.paths[a.http.path][a.http.method.toLowerCase()].requestBody = {
-          content: {
-            'application/json': {
-              schema: { $ref: `#/components/schemas/${a.request_schema}` }
-            }
-          }
-        };
-      }
-    });
-
-    const outPath = path.resolve(process.cwd(), opts.out);
-    fs.mkdirSync(path.dirname(outPath), { recursive: true });
-    fs.writeFileSync(outPath, JSON.stringify(openapi, null, 2));
-    console.log('Wrote OpenAPI to', opts.out);
-  });
-
-program.parse(process.argv);
