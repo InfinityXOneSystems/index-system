@@ -1,0 +1,17 @@
+{
+  "system_discovery": [
+    "index-system"
+  ],
+  "dependency_mapping": [
+    "index-system"
+  ],
+  "capability_indexing": [
+    "index-system"
+  ],
+  "system_orchestration": [
+    "orchestrator-system"
+  ],
+  "deployment_management": [
+    "orchestrator-system"
+  ]
+}

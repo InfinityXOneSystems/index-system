@@ -1,0 +1,21 @@
+systems:
+  - system_name: index-system
+    version: 0.1.0
+    description: Canonical discovery registry for meta-systems.
+    capabilities:
+      - system_discovery
+      - dependency_mapping
+      - capability_indexing
+    dependencies: []
+    repo_url: https://github.com/InfinityXOneSystems/index-system
+    manifest_file: /manifests/index-system.yaml
+  - system_name: orchestrator-system
+    version: 0.1.0
+    description: Orchestrates the deployment and management of meta-systems.
+    capabilities:
+      - system_orchestration
+      - deployment_management
+    dependencies:
+      - index-system
+    repo_url: https://github.com/InfinityXOneSystems/orchestrator-system
+    manifest_file: /manifests/orchestrator-system.yaml
